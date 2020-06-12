@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <link rel="stylesheet" href="./style.css" type="text/css"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="css/theme.bootstrap_4.css">
+    <!-- load jQuery and tablesorter scripts -->
+
+    <script type="text/javascript" src="js/jquery.tablesorter.js"></script>
+    <!-- tablesorter widgets (optional) -->
+    <script type="text/javascript" src="js/jquery.tablesorter.widgets.js"></script>
+
+    <script src="validation.js"></script>
+
+
+
+    <title>Programowanie dokumentow dynamicznych</title>
+    <script>
+        $(function () {
+            $("#productTable").tablesorter({
+                headers: {
+                    // disable sorting of the first & second column - before we would have to had made two entries
+                    // note that "first-name" is a class on the span INSIDE the first column th cell
+                    '.disableSort': {
+                        // disable it by setting the property sorter to false
+                        sorter: false
+                    }
+                }
+            });
+        })
+    </script>
+    <style>
+        .empty {
+            visibility: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Modal -->
+    <div class="modal fade" id="cart" tabindex="-1" role="dialog" aria-labelledby="cartTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartTitle">Koszyk</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table id="cartProducts" class="table table-responsive">
+                        
+                    </table>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="localStorage.clear()">Kup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <header>
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li class="active nav-item ">
+                        <a class="nav-link" href="./index.html">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="http://lcieszynski.zut.edu.pl/fileadmin/DPD/instrukcja_2019.pdf">Instrukcja</a>
+                    </li>
+
+                </ul>
+                <div class="nav-item text-right">
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                        data-target="#cart" onclick="prepareCart()">Koszyk</button>
+                </div>
+            </div>
+        </nav>
+
+    </header>
+    <main style="margin-top: 100px; margin-bottom: 80px;">
+        <div class="row container-fluid">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm-6">
+                <form action="" class="needs-validation" name="productForm" onsubmit="return false" novalidate>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productName">Produkt:</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="Nazwa towaru" id="productName"
+                                onBlur="validateProductName()">
+                            <div id="productNameFeedback"></div>
+                        </div>
+
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productID">Kod towaru:</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="12-34" id="productCode"
+                                onBlur="validateProductCode()">
+                            <div id="productCodeFeedback">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productNetto">Cena netto:</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="1234.00" id="productNetto"
+                                onBlur="validateProductNetto()">
+                            <div id="productNettoFeedback">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productVat">Stawka VAT:</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" placeholder="23" id="productVat"
+                                onBlur="validateProductVat()">
+                            <div id="productVatFeedback">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="brutto">Cena brutto:</label>
+                        <div class="col-10">
+                            <input type="text" class="form-control" id="productBrutto" value="" readonly>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productCategory">Kategoria towarowa:</label>
+                        <div class="col-10">
+                            <select class="form-control" id="productCategory" onclick="validateProductCategory()">
+                                <option value="0" hidden selected></option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                            <div id="categoryFeedback" style="display: block;"></div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productOptions">Opcje towaru:</label>
+                        <div id="productOptions col-10">
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input optionCheckbox" value="1"
+                                        onclick="validateOptionCheckbox()">Opcja 1
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input optionCheckbox" value="2"
+                                        onclick="validateOptionCheckbox()">Opcja 2
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input optionCheckbox" value="3"
+                                        onclick="validateOptionCheckbox()">Opcja 3
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input optionCheckbox" value="4"
+                                        onclick="validateOptionCheckbox()">Opcja 4
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input optionCheckbox" value="5"
+                                        onclick="validateOptionCheckbox()">Opcja 5
+                                </label>
+
+                            </div>
+                            <div id="optionFeedback" style="display: block;"></div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="productRating">Ocena towaru:</label>
+                        <div id="productRating col-10">
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input productGrade" name="rating" value="1">1
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input productGrade" name="rating" value="2">2
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input productGrade" name="rating" value="3">3
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input productGrade" name="rating" value="4">4
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" class="form-check-input productGrade" name="rating" value="5">5
+                                </label>
+                            </div>
+                            <div id="radioFeedback" style="display: block;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-2" for="productPhoto">Zdjęcie produktu:</label>
+                        <div class=col-10>
+                            <input type="text" class="form-control" id="productPhoto" onblur="validateImg()">
+                            <div id="imgFeedback" style="display: block;"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <label type="button" id="submitFormButton" class="btn btn-primary"
+                            onclick="addNewProduct()">Dodaj</label>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="col-sm">
+                <div class="card">
+                    <img class="card-img-top" src="./avatar-default.jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Michał Ręka</h5>
+                        <p class="card-text">Student informatyki ZUT</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="productTableDiv" class="empty" style="position: static;">
+            <label for="sortMode">Sortuj po:</label>
+            <select id="sortMode" onchange="changeFilter(this.selectedIndex)">
+                <option selected>nazwa od A</option>
+                <option>nazwa od Z</option>
+                <option>cena od najniższej</option>
+                <option>cena od najwyższej</option>
+                <option>ocena od najniższej</option>
+                <option>ocena od najwyższej</option>
+            </select>
+            <table id="productTable" class="tablesorter tablesorter-bootstrap table-hover">
+                <thead id="productTableHead">
+                    <tr style="border-bottom: 1px solid black;">
+                        <th>Nazwa produktu</th>
+                        <th class="disableSort">Kod towaru</th>
+                        <th class="disableSort">Cena netto</th>
+                        <th class="disableSort">VAT</th>
+                        <th>Cena brutto</th>
+                        <th class="disableSort">Kategoria towarowa</th>
+                        <th class="disableSort">Opcje produktu</th>
+                        <th>Ocena produktu</th>
+                        <th class="disableSort">Zdjęcie towaru</th>
+                        <th class="disableSort"></th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+
+                </tbody>
+            </table>
+        </div>
+
+
+
+    </main>
+    <footer class="page-footer font-small blue fixed-bottom bg-dark text-center text-light">
+        <div class="container-fluid" style="padding-top: 10px;padding-bottom: 10px;">
+            Footer
+        </div>
+    </footer>
+</body>
+
+</html>
