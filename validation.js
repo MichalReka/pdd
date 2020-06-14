@@ -3,6 +3,47 @@ var selectedCategory;
 var selectedGrade;
 var productNamesArray = [];
 var noRows = 0;
+var jsonTable;
+$.getJSON("data.json", function (json) {
+    jsonTable=json;
+    console.log(jsonTable);
+});
+function jsonToProductTable(){
+    var productTable = document.getElementById("productTableDiv");
+    if (productTable.classList.contains("empty")) {
+        productTable.classList.remove("empty");
+    }
+    for(var i=0;i<jsonTable.length;i++)
+    {
+        var options="";
+        for(var option of jsonTable[i].product_options)
+        {
+            options=options+option+",";
+        }
+        options.slice(-1);
+        noRows++;
+        var newRow = `
+            <tr id="row` + noRows + `">
+                <td id="name` + noRows + `">` + jsonTable[i].product_name + `</td>
+                <td>` + jsonTable[i].product_code + `</td>
+                <td>` + (jsonTable[i].product_price-parseFloat((jsonTable[i].product_price*jsonTable[i].product_vat/100))).toFixed(2) + `</td>
+                <td>` + jsonTable[i].product_vat + `</td>
+                <td>` + jsonTable[i].product_price + `</td>
+                <td>` + jsonTable[i].product_category + `</td>
+                <td>` + options + `</td>
+                <td>` + jsonTable[i].product_grade + `</td>
+                <td>` + jsonTable[i].product_photo + `</td>
+                <td>
+                    <label type="button" class="btn btn-success" onclick="addRowToCart(` + noRows + `)">Dodaj do koszyka</label>
+                    <label type="button" class="btn btn-secondary" onclick="editRow(` + noRows + `)">Edytuj</label>
+                    <label type="button" class="btn btn-danger" onclick="deleteRow(` + noRows + `)">Usuń</label>
+                </td>
+            </tr>`;
+        $("#productTable tbody").append(newRow);
+        $("#productTable").trigger("update");
+        alert("Poprawnie wczytano produkty z json");
+    }
+}
 
 function changeFilter(thisSelectedIndex) {
     switch (thisSelectedIndex) {
@@ -51,6 +92,25 @@ function changeFilter(thisSelectedIndex) {
     }
 }
 
+function sumPrice(){
+    var sumPrice=0;
+    var tableRows=document.getElementById("cartProducts").rows;
+    var radioButtons=document.getElementsByName("deliveryRadio");
+    for(var i=0;i<tableRows.length-1;i++)
+    {
+        var cartItemPrice=document.getElementById("cartItemPrice"+i).innerHTML;
+        var cartItemQuantity=document.getElementById("cartItemQuantity"+i).value;
+        sumPrice=sumPrice+parseFloat(cartItemPrice)*cartItemQuantity;
+    }
+    for (var radioButton of radioButtons) {
+        if (radioButton.checked) {
+            sumPrice=sumPrice+parseFloat(radioButton.value);
+            break;
+        }
+    }
+    document.getElementById("sumPrice").innerHTML=parseFloat(sumPrice).toFixed(2);
+}
+
 function addRowToCart(rowToAdd) {
     var rowObject = document.getElementById("productTable").rows[rowToAdd];
     var stringArr = [];
@@ -72,23 +132,34 @@ function addRowToCart(rowToAdd) {
 }
 
 function prepareCart() {
-    var cartTable = document.getElementById("cartProducts");
-    cartTable.innerHTML = "";
-    var tableString = `<tr>
-    <th>Nazwa produktu</th>
-    <th>Cena produktu</th>
-    <th>Liczba sztuk</th>
-</tr>`;
-
     var bodyRows = JSON.parse(localStorage.getItem("productsInCart"));
-    for (var i = 0; i < bodyRows.length; i++) {
-        tableString = tableString + `<tr>
+    if (bodyRows) {
+        document.getElementById("emptyCart").style.display="none";
+        document.getElementById("cartContent").style.display="block";
+        document.getElementById("buyButton").style.display="inline-block";
+        var cartTable = document.getElementById("cartProducts");
+        cartTable.innerHTML = "";
+        var tableString = `<thead><tr>
+        <th>Nazwa produktu</th>
+        <th>Cena produktu</th>
+        <th>Liczba sztuk</th>
+        </tr></thead/><tbody>`;
+        for (var i = 0; i < bodyRows.length; i++) {
+            tableString = tableString + `<tr>
         <td>` + bodyRows[i][0] + `</td>
-        <td>` + bodyRows[i][1] + `</td>
-        <td><input type="number" min="1" value=1></td>
+        <td id="cartItemPrice`+i+`">` + bodyRows[i][1] + `</td>
+        <td><input type="number" min="1" value=1 id="cartItemQuantity`+i+`" onchange="sumPrice()"></td>
         </tr>`;
+        }
+        cartTable.innerHTML = tableString+"</tbody>";
+        sumPrice();
     }
-    cartTable.innerHTML = tableString;
+    else
+    {
+        document.getElementById("emptyCart").style.display="block";
+        document.getElementById("cartContent").style.display="none";
+        document.getElementById("buyButton").style.display="none";
+    }
 
 }
 
@@ -181,7 +252,6 @@ function addNewProduct() {
         var productTable = document.getElementById("productTableDiv");
         if (productTable.classList.contains("empty")) {
             productTable.classList.remove("empty");
-
         }
         noRows++;
         var newRow = `

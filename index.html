@@ -38,11 +38,32 @@
                     }
                 }
             });
+            
         })
     </script>
     <style>
         .empty {
             visibility: hidden;
+        }
+
+        .list-group input[type="radio"] {
+            display: none;
+        }
+
+        .list-group input[type="radio"]+.list-group-item:before {
+            content: "\2022";
+            color: transparent;
+            font-weight: bold;
+            margin-right: 1em;
+        }
+
+        .list-group input[type="radio"]:checked+.list-group-item {
+            background-color: #0275D8;
+            color: #FFF;
+        }
+
+        .list-group input[type="radio"]:checked+.list-group-item:before {
+            color: inherit;
         }
     </style>
 
@@ -54,19 +75,41 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="cartTitle">Koszyk</h5>
+                    <h4 class="modal-title" id="cartTitle">Koszyk</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table id="cartProducts" class="table table-responsive">
-                        
-                    </table>
+                    <div id="cartContent">
+                        <table id="cartProducts" class="table table-responsive">
+                        </table>
+                        <div class="list-group">
+                            <input type="radio" class="deliveryRadio" name="deliveryRadio" value=10 id="radioPolishPost"
+                                checked onclick="sumPrice()" />
+                            <label class="list-group-item" for="radioPolishPost">Poczta polska - 10.00 zł</label>
+                            <input type="radio" class="deliveryRadio" name="deliveryRadio" value=12 id="radioDHL"
+                                onclick="sumPrice()" />
+                            <label class="list-group-item" for="radioDHL">Kurier DHL - 12.00 zł</label>
+                            <input type="radio" class="deliveryRadio" name="deliveryRadio" value=0 id="radioSelfCollect"
+                                onclick="sumPrice()" />
+                            <label class="list-group-item" for="radioSelfCollect">Odbiór osobisty - 0.00 zł</label>
+                        </div>
+                        <div class="card">
+                            <div class="card-body d-flex justify-content-around">
+                                <div class="p-2">Całkowita cena:</div>
+                                <div class="p-2" id="sumPrice"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="emptyCart">
+                        <h5>Koszyk jest pusty</h5>
+                    </div>
                 </div>
                 <div class="modal-footer d-flex justify-content-center">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="localStorage.clear()">Kup</button>
+                    <button type="button" class="btn btn-primary" id="buyButton" data-dismiss="modal"
+                        onclick="localStorage.clear()">Kup</button>
                 </div>
             </div>
         </div>
@@ -82,11 +125,10 @@
                         <a class="nav-link"
                             href="http://lcieszynski.zut.edu.pl/fileadmin/DPD/instrukcja_2019.pdf">Instrukcja</a>
                     </li>
-
                 </ul>
                 <div class="nav-item text-right">
-                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                        data-target="#cart" onclick="prepareCart()">Koszyk</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#cart"
+                        onclick="prepareCart()">Koszyk</button>
                 </div>
             </div>
         </nav>
@@ -250,7 +292,7 @@
                 </div>
             </div>
         </div>
-
+        <button type="button" class="btn btn-secondary" onclick="jsonToProductTable()">Wczytaj liste produktów</button>
         <div id="productTableDiv" class="empty" style="position: static;">
             <label for="sortMode">Sortuj po:</label>
             <select id="sortMode" onchange="changeFilter(this.selectedIndex)">
