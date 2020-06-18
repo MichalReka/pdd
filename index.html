@@ -22,6 +22,7 @@
     <script type="text/javascript" src="js/jquery.tablesorter.widgets.js"></script>
 
     <script src="validation.js"></script>
+    <script src="cart.js"></script>
 
 
 
@@ -38,7 +39,7 @@
                     }
                 }
             });
-            
+
         })
     </script>
     <style>
@@ -292,7 +293,21 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary" onclick="jsonToProductTable()">Wczytaj liste produktów</button>
+        <div class="row" style="margin-top:50px;margin-bottom: 50px;">
+            <div class="col-1"></div>
+            <select class="col-2" onchange="viewSelection()">
+                <option class="displayOptions" value="list">Lista</option>
+                <option class="displayOptions" value="grid">Kafelki</option>
+            </select>
+            <div class="col-1"></div>
+            <button type="button" class="btn btn-secondary col-2" onclick="jsonToProductTable()">Wczytaj liste
+                produktów</button>
+        </div>
+        <div id="productGridDiv" style="display: none;">
+            
+        </div>
+
+        </div>
         <div id="productTableDiv" class="empty" style="position: static;">
             <label for="sortMode">Sortuj po:</label>
             <select id="sortMode" onchange="changeFilter(this.selectedIndex)">
