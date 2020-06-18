@@ -3,9 +3,6 @@ var selectedCategory;
 var selectedGrade;
 var productNamesArray = [];
 var noProducts = 0;
-var currGridRow = 0;
-var noProductsInGrid = 0;
-const productsPerRow=4;
 var jsonTable;
 $.getJSON("data.json", function (json) {
     jsonTable = json;
@@ -19,10 +16,10 @@ function viewSelection() {
         if (option.selected) {
             if (option.value == "list") {
                 document.getElementById("productTableDiv").style.display = "block";
-                document.getElementById("productGridDiv").style.display = "none";
+                document.getElementById("productGallery").style.display = "none";
             } else if (option.value == "grid") {
                 document.getElementById("productTableDiv").style.display = "none";
-                document.getElementById("productGridDiv").style.display = "block";
+                document.getElementById("productGallery").style.display = "block";
             }
             break;
         }
@@ -53,7 +50,7 @@ function jsonToProductTable() {
                 <td>` + jsonTable[i].product_category + `</td>
                 <td>` + options + `</td>
                 <td>` + jsonTable[i].product_grade + `</td>
-                <td>` + jsonTable[i].product_photo + `</td>
+                <td><a id="productPhotoRow`+noProducts+`" href="` + jsonTable[i].image_source + `" data-toggle="lightbox" data-type="image">Pokaż zdjęcie</a></td>
                 <td>
                     <label type="button" class="btn btn-success" onclick="addRowToCart(` + noProducts + `)">Dodaj do koszyka</label>
                     <label type="button" class="btn btn-secondary" onclick="editRow(` + noProducts + `)">Edytuj</label>
@@ -61,23 +58,18 @@ function jsonToProductTable() {
                 </td>
             </tr>`;
         $("#productTable tbody").append(newRow);
-        if (noProductsInGrid == productsPerRow || currGridRow==0) {
-            $("#gridRow"+currGridRow).append(`<div class="col"></div>`);
-            currGridRow++;
-            var newGridRow = `<div class="row" id="gridRow`+currGridRow+`" style="margin-bottom:20px;"></div>`;
-            noProductsInGrid = 0;
-            $("#productGridDiv").append(newGridRow);
-        }
-        noProductsInGrid++;
         var newCard = `
-        <div class="col"></div>
-        <div class="card col-2" id="productCard`+(noProductsInGrid+((currGridRow-1)*productsPerRow))+`">
-            <img class="card-img-top" src="`+jsonTable[i].image_source+`" alt="Zdjecie produktu">
+        <div class="col-md-4 col-lg-3" id="productCard`+noProducts+`">
+        <div class="card border-0 transform-on-hover" >
+            
+	        <img src="`+jsonTable[i].image_source+`" alt="Zdjecie produktu" class="img-fluid card-img-top" onerror="this.onerror=null;this.src='noimage.jpg';">
             <div class="card-body">
-                <h5 class="card-title">`+jsonTable[i].product_name+`</h5>
-                <p class="card-text">Cena: `+nettoPrice+` (`+jsonTable[i].product_price+`)</p>
-        </div>`;
-        $("#gridRow"+currGridRow).append(newCard);
+                <h5>`+jsonTable[i].product_name+`</h5>
+                <p class="text-muted card-text">Cena: `+nettoPrice+` (`+jsonTable[i].product_price+`)</p>
+        </div>
+        </div>
+        `;
+        $("#productGalleryContent").append(newCard);
         $("#productTable").trigger("update");
     }
 }
@@ -173,7 +165,7 @@ function editRow(rowToEdit) {
             break;
         }
     }
-    document.getElementById("productPhoto").value = row.cells[8].innerHTML;
+    document.getElementById("productPhoto").value = $("#productPhotoRow"+rowToEdit).attr("href");
 
 }
 
@@ -205,11 +197,12 @@ function clearForm() {
 }
 
 function editProduct(rowToEdit) {
-    var productName = document.getElementById("name" + rowToDelete).innerHTML;
+    var productName = document.getElementById("name" + rowToEdit).innerHTML;
     var index = productNamesArray.indexOf(productName);
     var oldName = productNamesArray[index];
     productNamesArray[index] = "";
     if (validateProductForm()) {
+        var card=document.getElementById("productCard"+rowToEdit);
         var row = document.getElementById("productTable").rows[rowToEdit];
         row.cells[0].innerHTML = document.getElementById("productName").value;
         row.cells[1].innerHTML = document.getElementById("productCode").value;
@@ -219,7 +212,13 @@ function editProduct(rowToEdit) {
         row.cells[5].innerHTML = selectedCategory;
         row.cells[6].innerHTML = selectedOptions;
         row.cells[7].innerHTML = selectedGrade
-        row.cells[8].innerHTML = document.getElementById("productPhoto").value;
+        row.cells[8].innerHTML = `<a href="`+document.getElementById("productPhoto").value+`">Pokaż zdjęcie</a>`;
+        card.innerHTML=`<div class="card border-0 transform-on-hover" >
+        <img src="`+document.getElementById("productPhoto").value+`" alt="Zdjecie produktu" class="img-fluid card-img-top" onerror="this.onerror=null;this.src='noimage.jpg';">
+        <div class="card-body">
+            <h5>`+document.getElementById("productName").value+`</h5>
+            <p class="text-muted card-text">Cena: `+document.getElementById("productNetto").value+` (`+document.getElementById("productBrutto").value+`)</p>
+        </div>`;
         document.getElementById("submitFormButton").innerHTML = "Dodaj";
         document.getElementById("submitFormButton").setAttribute("onClick", "addNewProduct()");
         alert("Poprawnie zedytowano produkt!");
@@ -249,7 +248,7 @@ function addNewProduct() {
                 <td>` + selectedCategory + `</td>
                 <td>` + selectedOptions + `</td>
                 <td>` + selectedGrade + `</td>
-                <td>` + productPhoto.value + `</td>
+                <td><a id="productPhotoRow`+noProducts+`" href="` + productPhoto.value + `" data-toggle="lightbox" data-type="image">Pokaż zdjęcie</a></td>
                 <td>
                     <label type="button" class="btn btn-success" onclick="addRowToCart(` + noProducts + `)">Dodaj do koszyka</label>
                     <label type="button" class="btn btn-secondary" onclick="editRow(` + noProducts + `)">Edytuj</label>
@@ -259,19 +258,18 @@ function addNewProduct() {
 
         $("#productTable tbody").append(newRow);
         $("#productTable").trigger("update");
-        var newCard = `<div class="row">
-        <div class="col-1"></div>
-        <div class="card col-2" style="width: 18rem;">
-            <img class="card-img-top" src="..." alt="Card image cap">
+        var newCard = `
+        <div class="col-md-4 col-lg-3" id="productCard`+noProducts+`">
+        <div class="card border-0 transform-on-hover" >
+            
+	        <img src="`+productPhoto.value+`" alt="Zdjecie produktu" class="img-fluid card-img-top" onerror="this.onerror=null;this.src='noimage.jpg';">
             <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of
-                    the
-                    card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>`;
-        $("#productGridDiv"), append(newCard);
+                <h5>`+ productName.value+`</h5>
+                <p class="text-muted card-text">Cena: `+productNetto.value+` (`+productBrutto.value+`)</p>
+        </div>
+        </div>
+        `;
+        $("#productGalleryContent").append(newCard);
         clearForm();
 
     }
@@ -529,17 +527,9 @@ function validateProductCategory() {
 function validateImg() {
     var productImg = document.getElementById("productPhoto");
     var feedback = document.getElementById("imgFeedback");
-    var objRegExp = /\./;
     var ifError = false;
     if (productImg.value == "") {
         feedback.innerHTML = "Podaj nazwe obrazka";
-        feedback.classList.add("invalid-feedback");
-        productImg.classList.add("is-invalid");
-        feedback.classList.remove("valid-feedback");
-        productImg.classList.remove("is-valid");
-        ifError = true;
-    } else if (!objRegExp.test(productImg.value)) {
-        feedback.innerHTML = "Nieprawidłowy format nazwy";
         feedback.classList.add("invalid-feedback");
         productImg.classList.add("is-invalid");
         feedback.classList.remove("valid-feedback");

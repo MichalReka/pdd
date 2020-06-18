@@ -13,6 +13,11 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+    <link rel="stylesheet" href="    https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
+    <link rel="stylesheet" href="css/cards-gallery.css">
 
     <link rel="stylesheet" href="css/theme.bootstrap_4.css">
     <!-- load jQuery and tablesorter scripts -->
@@ -303,8 +308,12 @@
             <button type="button" class="btn btn-secondary col-2" onclick="jsonToProductTable()">Wczytaj liste
                 produktów</button>
         </div>
-        <div id="productGridDiv" style="display: none;">
-            
+        <div id="productGallery" class="gallery-block cards-gallery" style="display: none;">]
+            <div class="container">
+                <div id="productGalleryContent" class="row">
+                </div>
+            </div>
+
         </div>
 
         </div>
@@ -318,7 +327,7 @@
                 <option>ocena od najniższej</option>
                 <option>ocena od najwyższej</option>
             </select>
-            <table id="productTable" class="tablesorter tablesorter-bootstrap table-hover">
+            <table id="productTable" class="tablesorter tablesorter-bootstrap table-hover" style="word-wrap: break-word;">
                 <thead id="productTableHead">
                     <tr style="border-bottom: 1px solid black;">
                         <th>Nazwa produktu</th>
@@ -329,7 +338,7 @@
                         <th class="disableSort">Kategoria towarowa</th>
                         <th class="disableSort">Opcje produktu</th>
                         <th>Ocena produktu</th>
-                        <th class="disableSort">Zdjęcie towaru</th>
+                        <th class="disableSort" style="width:  8.33%">Zdjęcie towaru</th>
                         <th class="disableSort"></th>
                     </tr>
                 </thead>
@@ -347,6 +356,16 @@
             Footer
         </div>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script>
+        baguetteBox.run('.cards-gallery', {
+            animation: 'slideIn'
+        });
+        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+    </script>
 </body>
 
 </html>

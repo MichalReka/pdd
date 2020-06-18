@@ -6,7 +6,6 @@
         "product_category": 1,
         "product_options": [1, 3],
         "product_grade": 3,
-        "product_photo": "photo.jpg",
         "image_source": "https://www.pkt.pl/articles/1/g/3/f-6133-dlaczego-warto-transportowac-towar-w-drewnianych-skrzyniach.jpg"
 
     },
@@ -18,7 +17,6 @@
         "product_category": 1,
         "product_options": [1, 2],
         "product_grade": 2,
-        "product_photo": "image.png",
         "image_source": "data:image/jpeg;base64,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"
 
     },
@@ -30,7 +28,6 @@
         "product_category": 2,
         "product_options": [2, 3],
         "product_grade": 4,
-        "product_photo": "image.png",
         "image_source": "https://www.publicdomainpictures.net/pictures/20000/nahled/cordless-drill.jpg"
     },
     {
@@ -41,7 +38,6 @@
         "product_category": 1,
         "product_options": [1, 2],
         "product_grade": 2,
-        "product_photo": "image.png",
         "image_source": "https://www.publicdomainpictures.net/pictures/20000/nahled/cordless-drill.jpg"
 
     },
@@ -53,7 +49,6 @@
         "product_category": 1,
         "product_options": [1, 2],
         "product_grade": 2,
-        "product_photo": "image.png",
         "image_source": "https://www.publicdomainpictures.net/pictures/20000/nahled/cordless-drill.jpg"
 
     },
@@ -65,8 +60,47 @@
         "product_category": 3,
         "product_options": [2, 3, 4],
         "product_grade": 4,
-        "product_photo": "img.ppm",
         "image_source": "https://www.publicdomainpictures.net/pictures/20000/nahled/cordless-drill.jpg"
 
+    },
+    {
+        "product_name": "komputer",
+        "product_code": "29-44",
+        "product_price": 1000.99,
+        "product_vat": 23,
+        "product_category": 4,
+        "product_options": [1, 3, 4],
+        "product_grade": 5,
+        "image_soucre": "/noimage.jpg"
+    },
+    {
+        "product_name": "przedmiot",
+        "product_code": "99-44",
+        "product_price": 150.99,
+        "product_vat": 12,
+        "product_category": 3,
+        "product_options": [2, 3, 4],
+        "product_grade": 4,
+        "image_soucre": "/noimage.jpg"
+    },
+    {
+        "product_name": "przedmiot",
+        "product_code": "99-44",
+        "product_price": 150.99,
+        "product_vat": 12,
+        "product_category": 3,
+        "product_options": [2, 3, 4],
+        "product_grade": 4,
+        "image_soucre": "/noimage.jpg"
+    },
+    {
+        "product_name": "przedmiot",
+        "product_code": "99-44",
+        "product_price": 150.99,
+        "product_vat": 12,
+        "product_category": 3,
+        "product_options": [2, 3, 4],
+        "product_grade": 4,
+        "image_soucre": "/noimage.jpg"
     }
 ]
